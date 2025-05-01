@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Připojit se k Wi-Fi Host</title>
     <style>
-        /* CSS styly pro vzhled stránky */
         body {
             font-family: 'Arial', sans-serif;
             line-height: 1.6;
@@ -27,13 +26,13 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             max-width: 600px;
             width: 90%;
-            transition: all 0.5s ease-in-out; /* Plynulý přechod při změnách */
+            transition: all 0.5s ease-in-out; 
         }
 
         h1 {
             color: #333;
             margin-bottom: 20px;
-            transition: color 0.5s ease-in-out; /* Plynulý přechod barvy nadpisu */
+            transition: color 0.5s ease-in-out; 
         }
 
         #status-text {
@@ -43,13 +42,13 @@
 
         .keygen-code {
             font-weight: bold;
-            color: #007bff; /* Modrá barva pro zvýraznění keygenu */
+            color: #007bff; 
             font-size: 1.2em;
         }
 
         .copy-button {
             display: inline-block;
-            background-color: #28a745; /* Zelená barva */
+            background-color: #28a745; 
             color: white;
             padding: 5px 10px;
             border: none;
@@ -58,7 +57,7 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
             margin-left: 10px;
-            vertical-align: middle; /* Zarovnání s textem */
+            vertical-align: middle; 
         }
 
         .copy-button:hover {
@@ -70,16 +69,15 @@
             transform: translateY(1px);
         }
 
-        /* Styl pro zprávu o zkopírování */
         #copyStatus {
-            color: #28a745; /* Zelená barva pro úspěch */
+            color: #28a745;
             font-weight: bold;
             margin-top: 10px;
-            min-height: 1.2em; /* Rezervace místa */
-            visibility: hidden; /* Skryje element, ale ponechá místo */
-            opacity: 0; /* Pro plynulý přechod */
-            transition: opacity 0.3s ease-in-out; /* Animace zobrazení */
-            text-align: center; /* Zarovnání zprávy na střed */
+            min-height: 1.2em; 
+            visibility: hidden; 
+            opacity: 0; 
+            transition: opacity 0.3s ease-in-out; 
+            text-align: center;
         }
 
         #copyStatus.visible {
@@ -93,65 +91,53 @@
         <h1 id="main-heading">Připojit se k Wi-Fi Host</h1>
         <p id="status-text">Vyčkejte chvilku, děláme Vám místo v síti...</p>
 
-        <p id="copyStatus"></p> {/* Element pro zprávu o zkopírování */}
+        <p id="copyStatus"></p> 
     </div>
 
     <script>
-        // Získání odkazů na HTML elementy
         const headingElement = document.getElementById('main-heading');
         const statusTextElement = document.getElementById('status-text');
         const copyStatusElement = document.getElementById('copyStatus');
         const keygenValue = "Lopota45"; // Uložení keygenu
 
-        // Funkce pro zkopírování keygenu do schránky
         function copyKeygen() {
-            // Zkontrolujeme, zda prohlížeč podporuje Clipboard API
             if (!navigator.clipboard || !navigator.clipboard.writeText) {
                 console.error('Clipboard API není podporováno v tomto prohlížeči.');
                  copyStatusElement.innerText = 'Kopírování není podporováno v prohlížeči.';
-                 copyStatusElement.style.color = '#dc3545'; // Červená pro chybu
+                 copyStatusElement.style.color = '#dc3545';
                  copyStatusElement.classList.add('visible');
                   setTimeout(function() {
                     copyStatusElement.classList.remove('visible');
                      copyStatusElement.style.color = '';
                 }, 3000);
-                return; // Ukončíme funkci, pokud API není podporováno
+                return; 
             }
 
-            // Pokus o zkopírování textu
             navigator.clipboard.writeText(keygenValue).then(function() {
-                // Úspěšné zkopírování
                 copyStatusElement.innerText = 'Zkopírováno do schránky';
                 copyStatusElement.classList.add('visible');
 
-                // Skrytí zprávy o úspěchu po 2 sekundách
                 setTimeout(function() {
                     copyStatusElement.classList.remove('visible');
                 }, 2000);
             }, function(err) {
-                // Chyba při kopírování (jiná než nepodpora API)
                 console.error('Nepodařilo se zkopírovat text: ', err);
                 copyStatusElement.innerText = 'Chyba při kopírování!';
-                copyStatusElement.style.color = '#dc3545'; // Červená pro chybu
+                copyStatusElement.style.color = '#dc3545'; 
                 copyStatusElement.classList.add('visible');
 
-                 // Skrytí chybové zprávy po 3 sekundách
                  setTimeout(function() {
                     copyStatusElement.classList.remove('visible');
-                     copyStatusElement.style.color = ''; // Vrátíme původní barvu
+                     copyStatusElement.style.color = ''; 
                 }, 3000);
             });
         }
 
-        // Nastavení časovače, který spustí změnu obsahu po 9 sekundách
         setTimeout(function() {
-            // Změna textu nadpisu
             headingElement.innerText = 'Keygen Ready';
 
-            // Nový HTML obsah pro stavový text, včetně zvýrazněného keygenu a tlačítka Kopírovat
-            const newStatusHTML = `Nyní přejděte do Wi-Fi ve Vašem zařízení a zvolte síť WiFi_Host a jako heslo použijte keygen heslo: <span class="keygen-code">${keygenValue}</span><button class="copy-button" onclick="copyKeygen()">Kopírovat</button>.`;
+            const newStatusHTML = `Nyní přejděte do Wi-Fi ve Vašem zařízení a zvolte síť WiFi_Host a jako heslo použijte keygen heslo: <span class="keygen-code">${keygenValue}</span><button class="copy-button" onclick="copyKeygen()">Zkopírovat do schránky</button>.`;
 
-            // Nastavení nového HTML obsahu do odstavce
             statusTextElement.innerHTML = newStatusHTML;
 
         }, 9000); // 9000 milisekund = 9 sekund
