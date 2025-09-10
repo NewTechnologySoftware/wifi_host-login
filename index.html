@@ -26,13 +26,13 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             max-width: 600px;
             width: 90%;
-            transition: all 0.5s ease-in-out; 
+            transition: all 0.5s ease-in-out;
         }
 
         h1 {
             color: #333;
             margin-bottom: 20px;
-            transition: color 0.5s ease-in-out; 
+            transition: color 0.5s ease-in-out;
         }
 
         #status-text {
@@ -42,13 +42,13 @@
 
         .keygen-code {
             font-weight: bold;
-            color: #007bff; 
+            color: #007bff;
             font-size: 1.2em;
         }
 
         .copy-button {
             display: inline-block;
-            background-color: #28a745; 
+            background-color: #28a745;
             color: white;
             padding: 5px 10px;
             border: none;
@@ -57,14 +57,14 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
             margin-left: 10px;
-            vertical-align: middle; 
+            vertical-align: middle;
         }
 
         .copy-button:hover {
             background-color: #218838;
         }
 
-         .copy-button:active {
+        .copy-button:active {
             background-color: #1e7e34;
             transform: translateY(1px);
         }
@@ -73,10 +73,10 @@
             color: #28a745;
             font-weight: bold;
             margin-top: 10px;
-            min-height: 1.2em; 
-            visibility: hidden; 
-            opacity: 0; 
-            transition: opacity 0.3s ease-in-out; 
+            min-height: 1.2em;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
             text-align: center;
         }
 
@@ -91,26 +91,40 @@
         <h1 id="main-heading">Připojit se k Wi-Fi Host</h1>
         <p id="status-text">Vyčkejte chvilku, děláme Vám místo v síti...</p>
 
-        <p id="copyStatus"></p> 
+        <p id="copyStatus"></p>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
     <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBw5lQsztOMvg8R1_DP8dFQ2_Kvoowywu8",
+            authDomain: "ntswifi.firebaseapp.com",
+            projectId: "ntswifi",
+            storageBucket: "ntswifi.firebasestorage.app",
+            messagingSenderId: "756107277295",
+            appId: "1:756107277295:web:f3147d77da66193e4f7c1a"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
         const headingElement = document.getElementById('main-heading');
         const statusTextElement = document.getElementById('status-text');
         const copyStatusElement = document.getElementById('copyStatus');
-        const keygenValue = "KT456963pvTRRT2"; 
+        let keygenValue = "";
 
         function copyKeygen() {
             if (!navigator.clipboard || !navigator.clipboard.writeText) {
                 console.error('Clipboard API není podporováno v tomto prohlížeči.');
-                 copyStatusElement.innerText = 'Kopírování není podporováno v prohlížeči.';
-                 copyStatusElement.style.color = '#dc3545';
-                 copyStatusElement.classList.add('visible');
-                  setTimeout(function() {
+                copyStatusElement.innerText = 'Kopírování není podporováno v prohlížeči.';
+                copyStatusElement.style.color = '#dc3545';
+                copyStatusElement.classList.add('visible');
+                setTimeout(function() {
                     copyStatusElement.classList.remove('visible');
-                     copyStatusElement.style.color = '';
+                    copyStatusElement.style.color = '';
                 }, 3000);
-                return; 
+                return;
             }
 
             navigator.clipboard.writeText(keygenValue).then(function() {
@@ -123,24 +137,37 @@
             }, function(err) {
                 console.error('Nepodařilo se zkopírovat text: ', err);
                 copyStatusElement.innerText = 'Chyba při kopírování!';
-                copyStatusElement.style.color = '#dc3545'; 
+                copyStatusElement.style.color = '#dc3545';
                 copyStatusElement.classList.add('visible');
 
-                 setTimeout(function() {
+                setTimeout(function() {
                     copyStatusElement.classList.remove('visible');
-                     copyStatusElement.style.color = ''; 
+                    copyStatusElement.style.color = '';
                 }, 3000);
             });
         }
 
-        setTimeout(function() {
-            headingElement.innerText = 'Keygen Ready!';
-
-            const newStatusHTML = `Nyní přejděte do Wi-Fi ve Vašem zařízení a zvolte síť WiFi_Host a jako heslo použijte keygen heslo: <span class="keygen-code">${keygenValue}</span><button class="copy-button" onclick="copyKeygen()">Zkopírovat do schránky</button>.`;
-
-            statusTextElement.innerHTML = newStatusHTML;
-
-        }, 9000); // 9000 milisekund = 9 sekund
+        // Načte heslo z databáze a po 9 sekundách ho zobrazí
+        database.ref('wifiData/keygen/WiFiHostKey').once('value', snapshot => {
+            if (snapshot.exists()) {
+                keygenValue = snapshot.val();
+                setTimeout(function() {
+                    headingElement.innerText = 'Keygen Ready!';
+                    const newStatusHTML = `Nyní přejděte do Wi-Fi ve Vašem zařízení a zvolte síť WiFi_Host a jako heslo použijte keygen heslo: <span class="keygen-code">${keygenValue}</span><button class="copy-button" onclick="copyKeygen()">Zkopírovat do schránky</button>.`;
+                    statusTextElement.innerHTML = newStatusHTML;
+                }, 9000);
+            } else {
+                setTimeout(function() {
+                    headingElement.innerText = 'Chyba';
+                    statusTextElement.innerText = 'Nepodařilo se najít heslo pro Wi-Fi v databázi. Obraťte se na správce.';
+                }, 9000);
+            }
+        }).catch(error => {
+            setTimeout(function() {
+                headingElement.innerText = 'Chyba';
+                statusTextElement.innerText = 'Chyba při načítání databáze: ' + error.message;
+            }, 9000);
+        });
     </script>
 </body>
 </html>
